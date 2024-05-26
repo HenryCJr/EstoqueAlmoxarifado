@@ -498,7 +498,7 @@
                                 const response = await this.request("/Almoxarifado/api/saida_produtos?page=" + page, "GET");
                                 if (response) {
                                     this.list = response.list;
-                                    this.totalPages = Math.ceil(data.total / 5);
+                                    this.totalPages = Math.ceil(response.total / 5);
                                 }
                                 const dataE = await this.request("/Almoxarifado/api/employees", "GET");
                                 if (dataE) {

@@ -203,13 +203,21 @@ public class ApiServlet extends HttpServlet {
             response.sendError(401, "Unauthorized: No session");
         } else if (request.getMethod().equalsIgnoreCase("GET")) {
             String pageParam = request.getParameter("page");
-            if (pageParam == null) {
+            String totParam = request.getParameter("tot");
+            String filtro = request.getParameter("filtro");
+            if (pageParam == null && totParam == null && filtro == null) {
                 file.put("list", new JSONArray(Produtos.getProdutos()));
-            } else {
+            } else if(totParam != null){
+                file.put("total", Produtos.getTotalProdutos());
+            }else if(filtro != null){
+                   file.put("total", Produtos.getTotalProdutosFiltrados(filtro));
+            } else if(pageParam != null){
                 int page = Integer.parseInt(pageParam);
                 int itemsPerPage = 5;
                 file.put("list", new JSONArray(Produtos.getProdutosPages(page, itemsPerPage)));
                 file.put("total", Produtos.getTotalProdutos());
+            } else{
+                response.sendError(407, "Sem Parâmetros Funcionais");
             }            
         } else if (request.getMethod().equalsIgnoreCase("POST")) {
             JSONObject body = getJSONBODY(request.getReader());

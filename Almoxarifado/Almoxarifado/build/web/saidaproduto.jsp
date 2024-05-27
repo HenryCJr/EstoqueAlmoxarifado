@@ -241,25 +241,10 @@
                             searchQuery: ''
                         };
                     },
-                    /*computed: {
-                        filteredList() {
-                            if (this.searchQuery) {
-                                return this.list.filter(item =>
-                                    item.produto.nome.toLowerCase().includes(this.searchQuery.toLowerCase())
-                                );
-                            } else {
-                                return this.list;
-                            }
-                        },
-                        paginatedList() {
-                            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-                            const endIndex = startIndex + this.itemsPerPage;
-                            return this.filteredList.slice(startIndex, endIndex);
-                        },
-                        totalPages() {
-                            return Math.ceil(this.filteredList.length / this.itemsPerPage);
-                        }
-                    },*/
+                    mounted() {
+                        this.loadList();
+        
+                    },
                     methods: {
                         async request(url = "", method, data) {
                             try {
@@ -368,11 +353,17 @@
                         async removeProd(saidaRemo) {
                             try {
                                 await this.getProds();
-
+                                    if(saidaRemo.produto.tipo == "ESGOTADO"){
+                                        saidaRemo.produto.tipo = "DISPONIVEL";
+                                    }
+                                    console.log(this.produtos[saidaRemo.produto.id - 2].id);
+                                    console.log(this.produtos[saidaRemo.produto.id - 2].quantidade);
+                                    console.log(this.produtos[saidaRemo.produto.id - 2].nome);
+                                    console.log(saidaRemo.quantidade);
                                 await this.request(`/Almoxarifado/api/produtos?id=` + saidaRemo.produto.id, "PUT", {
                                     id: saidaRemo.produto.id,
                                     nome: saidaRemo.produto.nome,
-                                    quantidade: (this.produtos[saidaRemo.produto.id - 1].quantidade + saidaRemo.quantidade),
+                                    quantidade: (this.produtos[saidaRemo.produto.id - 2].quantidade + saidaRemo.quantidade),
                                     tipo: saidaRemo.produto.tipo,
                                     data: saidaRemo.produto.data,
                                     horario: saidaRemo.produto.horario
@@ -472,19 +463,30 @@
                                 };
                             }
                             if (crud == 0) {
+                                this.newProd.quantidade = this.newProd.quantidade - this.newQuantidade;
+                                if(this.newProd.quantidade <= 0){
+                                    
+                                    this.newProd.tipo = "ESGOTADO";
+                                } 
+                                
                                 const data = await this.request(`/Almoxarifado/api/produtos?id=` + (this.newProd.id), "PUT", {
                                     id: this.newProd.id,
                                     nome: this.newProd.nome,
-                                    quantidade: (this.newProd.quantidade - this.newQuantidade),
+                                    quantidade: this.newProd.quantidade,
                                     tipo: this.newProd.tipo,
                                     data: this.newProd.data,
                                     horario: this.newProd.horario
                                 });
                             } else if (crud == 1) {
+                                this.newProd.quantidade = this.newProd.quantidade - (this.newQuantidade - this.saida.quantidade);
+                                    
+                                if(this.newProd.quantidade <= 0){
+                                    this.newProd.tipo = "ESGOTADO";
+                                } 
                                 const data = await this.request(`/Almoxarifado/api/produtos?id=` + (this.newProd.id), "PUT", {
                                     id: this.newProd.id,
                                     nome: this.newProd.nome,
-                                    quantidade: (this.newProd.quantidade - (this.newQuantidade - this.saida.quantidade)),
+                                    quantidade: this.newProd.quantidade,
                                     tipo: this.newProd.tipo,
                                     data: this.newProd.data,
                                     horario: this.newProd.horario
@@ -498,7 +500,7 @@
                                 const response = await this.request("/Almoxarifado/api/saida_produtos?page=" + page, "GET");
                                 if (response) {
                                     this.list = response.list;
-                                    this.totalPages = Math.ceil(data.total / 5);
+                                    this.totalPages = Math.ceil(response.total / 5);
                                 }
                                 const dataE = await this.request("/Almoxarifado/api/employees", "GET");
                                 if (dataE) {
@@ -513,10 +515,8 @@
                                 this.error = 'Erro ao carregar a lista de produtos';
                             }
                         }
-                    },
-                    mounted() {
-                        this.loadList();
                     }
+                    
                 });
 
                 app.mount('#app');

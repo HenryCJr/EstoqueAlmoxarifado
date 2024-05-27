@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css" integrity="sha384-b6lVK+yci+bfDmaY1u0zE8YYJt0TZxLEAFyYSLHId4xoVvsrQu3INevFKo+Xir8e" crossorigin="anonymous">
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="styles/index_page.css">
 </head>
 <body>
@@ -21,18 +22,18 @@
                         <div class="card h-100">
                             <div class="card-body">
                                 <h5 class="card-title">Resumo do Estoque</h5>
-                                <p class="card-text resumo-texto">Total de Produtos: {{ totalProdutos }}</p>
-                                <p class="card-text resumo-texto">DisponÃ­veis: {{ disponiveis }}</p>
-                                <p class="card-text resumo-texto">Esgotados: {{ esgotados }}</p>
+                                <p class="card-text resumo-texto">Produtos Cadastrados: {{ totalProdutos }}</p>
+                                <p class="card-text resumo-texto">Disponí­veis: {{ disponiveis }}</p>
+                                <p class="card-text resumo-texto">Armazenados: {{ esgotados }}</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6 mb-4">
                         <div class="card h-100">
                             <div class="card-body">
-                                <h5 class="card-title">Acessos RÃ¡pidos</h5>
+                                <h5 class="card-title">Acessos Rápidos</h5>
                                 <button @click="irParaPagina('estoque')" class="btn btn-primary w-100 mb-2">Estoque</button>
-                                <button @click="irParaPagina('saida')" class="btn btn-primary w-100 mb-2">SaÃ­da de Produtos</button>
+                                <button @click="irParaPagina('saida')" class="btn btn-primary w-100 mb-2">Saí­da de Produtos</button>
                                 <button @click="irParaPagina('gerarCSV')" class="btn btn-primary w-100">Gerar CSV</button>
                             </div>
                         </div>
@@ -40,10 +41,10 @@
                     <div class="col-md-12 mb-4">
                         <div class="card h-100">
                             <div class="card-body">
-                                <h5 class="card-title">Alertas e NotificaÃ§Ãµes</h5>
+                                <h5 class="card-title">Alertas e Notificações</h5>
                                 <ul class="list-group list-group-flush">
-                                    <li class="list-group-item bg-transparent" v-for="alerta in alertas" :key="alerta.id">
-                                        {{ alerta.mensagem }}
+                                    <li class="list-group-item bg-transparent" v-for="item in list" :key="item.id">
+                                        ({{ item.tipo }}) {{ item.nome }}  possui {{ item.quantidade }} unidades.
                                     </li>
                                 </ul>
                             </div>
@@ -55,30 +56,79 @@
     </div>
 
     <script>
-        const app = Vue.createApp({
-            data() {
-                return {
-                    totalProdutos: 150,
-                    disponiveis: 120,
-                    esgotados: 30,
-                    alertas: [
-                        { id: 1, mensagem: "Produto X estÃ¡ com estoque baixo." },
-                        { id: 2, mensagem: "Produto Y foi esgotado." }
-                    ],
-                    atividadesRecentes: [
-                        { id: 1, descricao: "Adicionado Produto A", data: "2024-05-20" },
-                        { id: 2, descricao: "Removido Produto B", data: "2024-05-21" }
-                    ]
-                };
-            },
-            methods: {
-                irParaPagina(pagina) {
-                    window.location.href = `/${pagina}.jsp`;
-                }
-            }
-        });
+      const app = Vue.createApp({
+      data() {
+        return {
+          totalProdutos: 0,
+          list: [],
+          disponiveis: 0,
+          esgotados: 0
+          
+          
+        };
+      },
+      mounted() {
+        this.loadList();
+        
+      },
+      methods: {
+          
+           async request(url = "", method, data) {
+                            try {
+                                const response = await fetch(url, {
+                                    method: method,
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify(data)
+                                });
+                                if (response.status === 200) {
+                                    return response.json();
+                                } else {
+                                    this.error = response.statusText;
+                                }
+                            } catch (e) {
+                                this.error = e;
+                                return null;
+                            }
+                        },
+        
+        async loadList() {
+                            
+                            try {
+                                
+                                const data = await this.request("/Almoxarifado/api/produtos", "GET");
+                                if (data) {
+                                    this.list = data.list;
+                                }
+                                
+                                const dataTC = await this.request("/Almoxarifado/api/produtos?tot=true", "GET");
+                                if (dataTC) {
+                                    this.totalProdutos = dataTC.total;
+                                    
+                                    
+                                }
+                                const dataD = await this.request("/Almoxarifado/api/produtos?filtro=DISPONIVEL", "GET");
+                                if (dataD) {
+                                    this.disponiveis = dataD.total;
+                                    
+                                    
+                                }
+                                const dataE = await this.request("/Almoxarifado/api/produtos?filtro=NO ARMAZÉM", "GET");
+                                if (dataE) {
+                                    this.esgotados = dataE.total;
+                                    
+                                    
+                                }
+                               
+                            } catch (error) {
+                                console.error('Erro ao carregar a lista de produtos:', error);
+                                this.error = 'Erro ao carregar a lista de produtos';
+                            }
+                        }
+        
+      }
+    });
 
-        app.mount('#app');
+    app.mount('#app');
     </script>
 
     <style>

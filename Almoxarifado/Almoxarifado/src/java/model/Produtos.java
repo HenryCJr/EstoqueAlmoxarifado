@@ -58,6 +58,24 @@ public class Produtos {
         return total;
     }
     
+    
+    public static int getTotalProdutosFiltrados(String filtro) throws Exception {
+        Connection con = AppListener.getConnection();
+        String sql = "SELECT COUNT(*) AS total FROM produtos WHERE tipo_produto=?";
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setString(1, filtro);
+        ResultSet rs = stmt.executeQuery();
+        int total = 0;
+        if (rs.next()) {
+            total = rs.getInt("total");
+        }
+        rs.close();
+        stmt.close();
+        con.close();
+        return total;
+    }
+    
+    
     public static ArrayList<Produtos> getProdutosPages(int page, int recordsPerPage) throws Exception {
         ArrayList<Produtos> list = new ArrayList<>();
         Connection con = AppListener.getConnection();

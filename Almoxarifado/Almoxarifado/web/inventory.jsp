@@ -217,6 +217,10 @@
                             return Math.ceil(this.filteredList.length / this.itemsPerPage);
                         }*/
                     },
+                    mounted() {
+                        this.loadList();
+        
+                    },
                     methods: {
                         async request(url = "", method, data) {
                             try {
@@ -412,11 +416,8 @@
                                 }
                             }
                         }
-                    },
-                    mounted() {
-                        this.loadList();
-                        
                     }
+                    
                 });
 
                 app.mount('#app');

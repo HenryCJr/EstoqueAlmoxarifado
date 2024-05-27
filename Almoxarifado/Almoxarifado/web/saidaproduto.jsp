@@ -241,25 +241,10 @@
                             searchQuery: ''
                         };
                     },
-                    /*computed: {
-                        filteredList() {
-                            if (this.searchQuery) {
-                                return this.list.filter(item =>
-                                    item.produto.nome.toLowerCase().includes(this.searchQuery.toLowerCase())
-                                );
-                            } else {
-                                return this.list;
-                            }
-                        },
-                        paginatedList() {
-                            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-                            const endIndex = startIndex + this.itemsPerPage;
-                            return this.filteredList.slice(startIndex, endIndex);
-                        },
-                        totalPages() {
-                            return Math.ceil(this.filteredList.length / this.itemsPerPage);
-                        }
-                    },*/
+                    mounted() {
+                        this.loadList();
+        
+                    },
                     methods: {
                         async request(url = "", method, data) {
                             try {
@@ -513,10 +498,8 @@
                                 this.error = 'Erro ao carregar a lista de produtos';
                             }
                         }
-                    },
-                    mounted() {
-                        this.loadList();
                     }
+                    
                 });
 
                 app.mount('#app');

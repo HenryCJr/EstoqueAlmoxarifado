@@ -109,7 +109,7 @@ public class Produtos {
     public static Produtos getProduto(long id) throws Exception {
         Produtos produto = null;
         Connection con = AppListener.getConnection();
-        String sql = "SELECT * FROM produtos WHERE id_produto = ?";
+        String sql = "SELECT * FROM produtos WHERE id_produto = ? ORDER BY nome_produto";
         PreparedStatement stmt = con.prepareStatement(sql);
         stmt.setLong(1, id);
         ResultSet rs = stmt.executeQuery();

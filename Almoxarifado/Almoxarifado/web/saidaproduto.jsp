@@ -56,7 +56,7 @@
                                                 <select class="form-select" v-model="newProd" id="inputName"
                                                     @change="getProds()">
                                                     <option v-for="item3 in produtos" :key="item3.id" :value="item3">{{
-                                                        item3.nome }}</option>
+                                                        item3.nome }} ({{item3.tipo }})</option>
                                                 </select>
                                             </div>
                                             <div class="mb-3">
@@ -124,7 +124,7 @@
                                                 <select class="form-select" v-model="newProd" id="inputName"
                                                     @change="getProds()">
                                                     <option v-for="item3 in produtos" :key="item3.id" :value="item3">{{
-                                                        item3.nome }}</option>
+                                                        item3.nome }} ({{item3.tipo }})</option>
                                                 </select>
                                             </div>
                                             <div class="mb-3">
@@ -352,18 +352,24 @@
 
                         async removeProd(saidaRemo) {
                             try {
+                                
                                 await this.getProds();
+                                
+                                // Encontre o índice do produto com base no ID
+                                const index = this.produtos.findIndex(produto => produto.id === saidaRemo.produto.id);
+
+                                
                                     if(saidaRemo.produto.tipo == "ESGOTADO"){
                                         saidaRemo.produto.tipo = "DISPONIVEL";
                                     }
-                                    console.log(this.produtos[saidaRemo.produto.id - 2].id);
-                                    console.log(this.produtos[saidaRemo.produto.id - 2].quantidade);
-                                    console.log(this.produtos[saidaRemo.produto.id - 2].nome);
-                                    console.log(saidaRemo.quantidade);
+                                    console.log(this.produtos[index].id);
+                                    console.log(this.produtos[index].quantidade);
+                                    
+                                    
                                 await this.request(`/Almoxarifado/api/produtos?id=` + saidaRemo.produto.id, "PUT", {
                                     id: saidaRemo.produto.id,
                                     nome: saidaRemo.produto.nome,
-                                    quantidade: (this.produtos[saidaRemo.produto.id - 2].quantidade + saidaRemo.quantidade),
+                                    quantidade: (this.produtos[index].quantidade += saidaRemo.quantidade),
                                     tipo: saidaRemo.produto.tipo,
                                     data: saidaRemo.produto.data,
                                     horario: saidaRemo.produto.horario

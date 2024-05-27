@@ -20,7 +20,8 @@
                     <select id="tipoFiltro" name="tipoFiltro" class="form-select bg-secondary text-white">         
                         <option value="">Estoque Completo</option>
                         <option value="DISPONIVEL">Disponível</option>
-                        <option value="NO ARMAZÉM">No Armazém</option>
+                        <option value="NO ARMAZEM">No Armazém</option>
+                        <option value="ESGOTADO">Esgotado</option>
                     </select>
                 </div>
                 <div class="d-grid">

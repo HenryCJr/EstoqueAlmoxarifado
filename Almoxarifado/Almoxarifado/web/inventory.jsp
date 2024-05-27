@@ -59,6 +59,7 @@
                                                 <select class="form-select" v-model="newStatus" id="inputStatus">
                                                     <option value="DISPONIVEL">Disponivel</option>
                                                     <option value="NO ARMAZÉM">No Armazém</option>
+                                                    <option value="ESGOTADO">Esgotado</option>
                                                 </select>
                                             </div>
                                             <div class="mb-3">
@@ -106,7 +107,7 @@
                                                 <label for="inputStatus" class="form-label">Status</label>
                                                 <select class="form-select" v-model="newStatus" id="inputStatus">
                                                     <option value="DISPONIVEL">Disponivel</option>
-                                                    <option value="NO ARMAZÉM">No Armazém</option>
+                                                    <option value="NO ARMAZEM">No Armazém</option>
                                                     <option value="ESGOTADO">Esgotado</option>
                                                 </select>
                                             </div>
@@ -216,6 +217,10 @@
                         totalPages() {
                             return Math.ceil(this.filteredList.length / this.itemsPerPage);
                         }*/
+                    },
+                    mounted() {
+                        this.loadList();
+        
                     },
                     methods: {
                         async request(url = "", method, data) {
@@ -412,11 +417,8 @@
                                 }
                             }
                         }
-                    },
-                    mounted() {
-                        this.loadList();
-                        
                     }
+                    
                 });
 
                 app.mount('#app');

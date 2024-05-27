@@ -58,7 +58,7 @@
                                                 <label for="inputStatus" class="form-label">Status</label>
                                                 <select class="form-select" v-model="newStatus" id="inputStatus">
                                                     <option value="DISPONIVEL">Disponivel</option>
-                                                    <option value="NO ARMAZÉM">No Armazém</option>
+                                                    <option value="NO ARMAZEM">No Armazém</option>
                                                     <option value="ESGOTADO">Esgotado</option>
                                                 </select>
                                             </div>

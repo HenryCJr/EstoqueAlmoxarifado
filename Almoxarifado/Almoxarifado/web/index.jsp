@@ -24,7 +24,8 @@
                                 <h5 class="card-title">Resumo do Estoque</h5>
                                 <p class="card-text resumo-texto">Produtos Cadastrados: {{ totalProdutos }}</p>
                                 <p class="card-text resumo-texto">Disponí­veis: {{ disponiveis }}</p>
-                                <p class="card-text resumo-texto">Armazenados: {{ esgotados }}</p>
+                                <p class="card-text resumo-texto">Armazenados: {{ armazenados }}</p>
+                                <p class="card-text resumo-texto">Esgotados: {{ esgotados }}</p>
                             </div>
                         </div>
                     </div>
@@ -44,7 +45,8 @@
                                 <h5 class="card-title">Alertas e Notificações</h5>
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item bg-transparent" v-for="item in list" :key="item.id">
-                                        ({{ item.tipo }}) {{ item.nome }}  possui {{ item.quantidade }} unidades.
+                                        <div v-if="item.quantidade > 0"> ({{ item.tipo }}) {{ item.nome }}  possui {{ item.quantidade }} unidades. </div>
+                                        <div v-else="item.quantidade <= 0"> ({{ item.tipo }}) {{ item.nome }} está ESGOTADO. </div>
                                     </li>
                                 </ul>
                             </div>
@@ -62,6 +64,7 @@
           totalProdutos: 0,
           list: [],
           disponiveis: 0,
+          armazenados: 0,
           esgotados: 0
           
           
@@ -112,7 +115,13 @@
                                     
                                     
                                 }
-                                const dataE = await this.request("/Almoxarifado/api/produtos?filtro=NO ARMAZÉM", "GET");
+                                const dataA = await this.request("/Almoxarifado/api/produtos?filtro=NO ARMAZEM", "GET");
+                                if (dataA) {
+                                    this.armazenados = dataA.total;
+                                    
+                                    
+                                }
+                                const dataE = await this.request("/Almoxarifado/api/produtos?filtro=ESGOTADO", "GET");
                                 if (dataE) {
                                     this.esgotados = dataE.total;
                                     

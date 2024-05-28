@@ -24,7 +24,7 @@
                         <h2 class="mb-3 d-flex align-items-center justify-content-between">
                             Estoque
                             <div class="d-flex align-items-center">
-                                <input type="text" v-model="searchQuery" placeholder="Digite algo..."
+                                <input @input="searchProducts($event.target.value)" type="text" v-model="searchQuery" placeholder="Pesquisar produto..."
                                     class="form-control custom-input mx-2">
                                 <button @click="resetForm()" type="button"
                                     class="btn btn-success btn-sm ms-auto buttons" data-bs-toggle="modal"
@@ -58,7 +58,7 @@
                                                 <label for="inputStatus" class="form-label">Status</label>
                                                 <select class="form-select" v-model="newStatus" id="inputStatus">
                                                     <option value="DISPONIVEL">Disponivel</option>
-                                                    <option value="NO ARMAZÉM">No Armazém</option>
+                                                    <option value="NO ARMAZEM">No Armazém</option>
                                                     <option value="ESGOTADO">Esgotado</option>
                                                 </select>
                                             </div>
@@ -194,30 +194,8 @@
                             totalPages: 0
                         };
                     },
-                    computed: {
-                        filteredList() {
-                            
-                            if (this.searchQuery) {
-                                
-                                //getProds();
-                                return this.list.filter(item =>
-                                    item.nome.toLowerCase().includes(this.searchQuery.toLowerCase())
-                                );
-                            } else {
-                                return this.list;
-                            }
-                            
-                            
-                        }
-                        /*paginatedList() {
-                            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-                            const endIndex = startIndex + this.itemsPerPage;
-                            return this.filteredList.slice(startIndex, endIndex);
-                        },
-                        totalPages() {
-                            return Math.ceil(this.filteredList.length / this.itemsPerPage);
-                        }*/
-                    },
+                    
+                    
                     mounted() {
                         this.loadList();
         
@@ -246,6 +224,15 @@
                                     this.list = data.list;
                                 }
                         },
+                        async searchProducts(src){
+                            console.log(src);
+                            const data = await this.request("/Almoxarifado/api/produtos?search=" + src, "GET");
+                                if (data) {
+                                    this.list = data.list;
+                                }
+                                
+                        },
+                        
                         async insertOrUpdate() {
                             if (prod) {
                                 await this.updateProd();

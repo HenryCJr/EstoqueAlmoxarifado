@@ -205,7 +205,8 @@ public class ApiServlet extends HttpServlet {
             String pageParam = request.getParameter("page");
             String totParam = request.getParameter("tot");
             String filtro = request.getParameter("filtro");
-            if (pageParam == null && totParam == null && filtro == null) {
+            String src = request.getParameter("search");
+            if (pageParam == null && totParam == null && filtro == null && src == null) {
                 file.put("list", new JSONArray(Produtos.getProdutos()));
             } else if(totParam != null){
                 file.put("total", Produtos.getTotalProdutos());
@@ -216,6 +217,10 @@ public class ApiServlet extends HttpServlet {
                 int itemsPerPage = 5;
                 file.put("list", new JSONArray(Produtos.getProdutosPages(page, itemsPerPage)));
                 file.put("total", Produtos.getTotalProdutos());
+            }else if(src != null){
+                
+                file.put("list", new JSONArray(Produtos.getProdutosPesquisa(src)));
+                
             } else{
                 response.sendError(407, "Sem Parâmetros Funcionais");
             }            
@@ -334,8 +339,11 @@ public class ApiServlet extends HttpServlet {
             // Gerar o arquivo CSV com base no filtro selecionado
             if (filtro.equalsIgnoreCase("DISPONIVEL")) {
                 filePath = "EstoqueDisponivel.csv";
-            } else if (filtro.equalsIgnoreCase("NO ARMAZÉM")) {
+            } else if (filtro.equalsIgnoreCase("NO ARMAZEM")) {
                 filePath = "EstoqueNoArmazem.csv";
+            }
+             else if (filtro.equalsIgnoreCase("ESGOTADO")) {
+                filePath = "ProdutosEsgotados.csv";
             }
         }
             // Chama a função para gerar o arquivo CSV com base no caminho do arquivo

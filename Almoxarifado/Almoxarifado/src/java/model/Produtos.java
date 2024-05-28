@@ -43,8 +43,32 @@ public class Produtos {
         return list;
     }
     
+    public static ArrayList<Produtos> getProdutosPesquisa(String nm) throws Exception {
+        ArrayList<Produtos> list = new ArrayList<>();
+        Connection con = AppListener.getConnection();
+        String sql = "SELECT * FROM produtos WHERE LOWER(nome_produto) LIKE ?";
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setString(1, "%" + nm.toLowerCase() + "%");
+        ResultSet rs = stmt.executeQuery();
+       
+        while (rs.next()) {
+            long id = rs.getLong("id_produto");
+            String nome = rs.getString("nome_produto");
+            int quantidade = rs.getInt("quantidade");
+            String tipo = rs.getString("tipo_produto");
+            Date data = rs.getDate("data");
+            Time horario = rs.getTime("horario");
+            list.add(new Produtos(id, nome, quantidade, tipo, data, horario));
+        }
+        rs.close();
+        stmt.close();
+        con.close();
+        return list;
+    }
+    
     public static int getTotalProdutos() throws Exception {
         Connection con = AppListener.getConnection();
+        
         String sql = "SELECT COUNT(*) AS total FROM produtos";
         PreparedStatement stmt = con.prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();

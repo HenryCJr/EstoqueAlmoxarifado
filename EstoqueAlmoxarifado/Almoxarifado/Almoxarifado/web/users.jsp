@@ -74,7 +74,7 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <form>
+                                    <form @keydown.enter.prevent="insertOrUpdate">
                                         <div class="mb-3">
                                             <label for="inputRole" class="form-label">Função</label>
                                             <select class="form-select" v-model="newRole">

@@ -43,7 +43,7 @@
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <form @submit.prevent="addProduto">
+                                        <form @submit.prevent="addProduto"  @keydown.enter.prevent="addProduto">
                                             <div class="mb-3">
                                                 <label for="inputName" class="form-label">Nome do Item</label>
                                                 <input type="text" v-model="newName" class="form-control"
@@ -92,7 +92,7 @@
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <form @submit.prevent="updateProd">
+                                        <form @submit.prevent="updateProd"  @keydown.enter.prevent="updateProd">
                                             <div class="mb-3">
                                                 <label for="inputName" class="form-label">Nome do Item</label>
                                                 <input type="text" v-model="newName" class="form-control"

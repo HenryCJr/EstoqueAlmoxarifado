@@ -22,7 +22,6 @@
             <div :class="{ 'offcanvas offcanvas-start': true, 'dark-navbar': isDarkTheme }" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
                 <div class="offcanvas-header">
                     <a class="navbar-brand" href="index.jsp"><i class="bi bi-key"></i>&nbsp;Almoxarifado</a>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" @click="closeOffcanvas"></button>
                 </div>
                 <div class="offcanvas-body">
                     <ul class="navbar-nav">

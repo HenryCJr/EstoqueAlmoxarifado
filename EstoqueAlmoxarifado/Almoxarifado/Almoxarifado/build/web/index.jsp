@@ -14,7 +14,6 @@
     <%@ include file="WEB-INF/jspf/header.jspf" %>
     <div id="app" class="container-fluid mt-4">
         <div class="row">
-            
             <div class="col-md-10 offset-md-2">
                 <h1 class="mb-4 mt-3 display-4">Bem-vindo ao Sistema de Controle de Estoque</h1>
                 <div class="row">
@@ -33,9 +32,9 @@
                         <div class="card h-100">
                             <div class="card-body">
                                 <h5 class="card-title">Acessos Rápidos</h5>
-                                <button @click="irParaPagina('estoque')" class="btn btn-primary w-100 mb-2">Estoque</button>
-                                <button @click="irParaPagina('saida')" class="btn btn-primary w-100 mb-2">Saí­da de Produtos</button>
-                                <button @click="irParaPagina('gerarCSV')" class="btn btn-primary w-100">Gerar CSV</button>
+                                <button @click="irParaPagina('/Almoxarifado/inventory.jsp')" class="btn btn-primary w-100 mb-2">Estoque</button>
+                                <button @click="irParaPagina('/Almoxarifado/saidaproduto.jsp')" class="btn btn-primary w-100 mb-2">Saí­da de Produtos</button>
+                                <button @click="irParaPagina('/Almoxarifado/csv.jsp')" class="btn btn-primary w-100">Gerar CSV</button>
                             </div>
                         </div>
                     </div>
@@ -44,9 +43,9 @@
                             <div class="card-body">
                                 <h5 class="card-title">Alertas e Notificações</h5>
                                 <ul class="list-group list-group-flush">
-                                    <li class="list-group-item bg-transparent" v-for="item in list" :key="item.id">
-                                        <div v-if="item.quantidade > 0"> ({{ item.tipo }}) {{ item.nome }}  possui {{ item.quantidade }} unidades. </div>
-                                        <div v-else="item.quantidade <= 0"> ({{ item.tipo }}) {{ item.nome }} está ESGOTADO. </div>
+                                    <li class="list-group-item bg-transparent" v-for="item in sortedList" :key="item.id">
+                                        <div v-if="item.quantidade > 0"> ({{ item.tipo }}) {{ item.nome }} possui {{ item.quantidade }} unidades. </div>
+                                        <div v-else> ({{ item.tipo }}) {{ item.nome }} está ESGOTADO. </div>
                                     </li>
                                 </ul>
                             </div>
@@ -58,86 +57,89 @@
     </div>
 
     <script>
-      const app = Vue.createApp({
-      data() {
-        return {
-          totalProdutos: 0,
-          list: [],
-          disponiveis: 0,
-          armazenados: 0,
-          esgotados: 0
-          
-          
-        };
-      },
-      mounted() {
-        this.loadList();
-        
-      },
-      methods: {
-          
-           async request(url = "", method, data) {
-                            try {
-                                const response = await fetch(url, {
-                                    method: method,
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify(data)
-                                });
-                                if (response.status === 200) {
-                                    return response.json();
-                                } else {
-                                    this.error = response.statusText;
-                                }
-                            } catch (e) {
-                                this.error = e;
-                                return null;
-                            }
-                        },
-        
-        async loadList() {
-                            
-                            try {
-                                
-                                const data = await this.request("/Almoxarifado/api/produtos", "GET");
-                                if (data) {
-                                    this.list = data.list;
-                                }
-                                
-                                const dataTC = await this.request("/Almoxarifado/api/produtos?tot=true", "GET");
-                                if (dataTC) {
-                                    this.totalProdutos = dataTC.total;
-                                    
-                                    
-                                }
-                                const dataD = await this.request("/Almoxarifado/api/produtos?filtro=DISPONIVEL", "GET");
-                                if (dataD) {
-                                    this.disponiveis = dataD.total;
-                                    
-                                    
-                                }
-                                const dataA = await this.request("/Almoxarifado/api/produtos?filtro=NO ARMAZEM", "GET");
-                                if (dataA) {
-                                    this.armazenados = dataA.total;
-                                    
-                                    
-                                }
-                                const dataE = await this.request("/Almoxarifado/api/produtos?filtro=ESGOTADO", "GET");
-                                if (dataE) {
-                                    this.esgotados = dataE.total;
-                                    
-                                    
-                                }
-                               
-                            } catch (error) {
-                                console.error('Erro ao carregar a lista de produtos:', error);
-                                this.error = 'Erro ao carregar a lista de produtos';
-                            }
+        const app = Vue.createApp({
+            data() {
+                return {
+                    totalProdutos: 0,
+                    list: [],
+                    disponiveis: 0,
+                    armazenados: 0,
+                    esgotados: 0,
+                    error: null
+                };
+            },
+            mounted() {
+                this.loadList();
+            },
+            methods: {
+                async request(url = "", method, data) {
+                    try {
+                        const response = await fetch(url, {
+                            method: method,
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(data)
+                        });
+                        if (response.status === 200) {
+                            return response.json();
+                        } else {
+                            this.error = response.statusText;
                         }
-        
-      }
-    });
+                    } catch (e) {
+                        this.error = e;
+                        return null;
+                    }
+                },
+                async loadList() {
+                    try {
+                        const data = await this.request("/Almoxarifado/api/produtos", "GET");
+                        if (data) {
+                            this.list = data.list;
+                            this.sortList();
+                        }
+                        const dataTC = await this.request("/Almoxarifado/api/produtos?tot=true", "GET");
+                        if (dataTC) {
+                            this.totalProdutos = dataTC.total;
+                        }
+                        const dataD = await this.request("/Almoxarifado/api/produtos?filtro=DISPONIVEL", "GET");
+                        if (dataD) {
+                            this.disponiveis = dataD.total;
+                        }
+                        const dataA = await this.request("/Almoxarifado/api/produtos?filtro=NO%20ARMAZEM", "GET");
+                        if (dataA) {
+                            this.armazenados = dataA.total;
+                        }
+                        const dataE = await this.request("/Almoxarifado/api/produtos?filtro=ESGOTADO", "GET");
+                        if (dataE) {
+                            this.esgotados = dataE.total;
+                        }
+                    } catch (error) {
+                        console.error('Erro ao carregar a lista de produtos:', error);
+                        this.error = 'Erro ao carregar a lista de produtos';
+                    }
+                },
+                sortList() {
+                    this.list.sort((a, b) => {
+                        if (a.quantidade === 0 && b.quantidade !== 0) {
+                            return -1;
+                        } else if (a.quantidade !== 0 && b.quantidade === 0) {
+                            return 1;
+                        } else {
+                            return a.quantidade - b.quantidade;
+                        }
+                    });
+                },
+                irParaPagina(url) {
+                    window.location.href = url;
+                }
+            },
+            computed: {
+                sortedList() {
+                    return this.list;
+                }
+            }
+        });
 
-    app.mount('#app');
+        app.mount('#app');
     </script>
 
     <style>
@@ -152,7 +154,6 @@
         }
         .card-title, .card-text, .list-group-item {
             color: #ECF0F1;
-            font-size: 2.00rem;
         }
         .btn-primary {
             background-color: #2980B9;
@@ -178,10 +179,11 @@
             border-radius: 0;
         }
         .resumo-texto {
-            font-size: 1.75rem; /* Aumentando a fonte do resumo */
+            font-size: 1.75rem;
         }
-        
-        
+        .list-group-item {
+            font-size: 1.25rem;
+        }
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>

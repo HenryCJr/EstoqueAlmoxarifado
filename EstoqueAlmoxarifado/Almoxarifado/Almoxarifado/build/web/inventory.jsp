@@ -157,7 +157,7 @@
                             </tr>
                         </table>
 
-                        <div class="pagination-container">
+                        <div class="pagination-container" v-if="!searchQuery">
                         <div class="pagination">
                             <button @click="previousPage" :disabled="currentPage === 1">Anterior</button>
                             <div v-if="totalPages > 1">

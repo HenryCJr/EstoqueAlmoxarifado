@@ -19,12 +19,8 @@
                 <div v-else class="normal-page">
                     <h2 class="mb-3 d-flex align-items-center justify-content-between">Funcionarios
                         <div class="d-flex align-items-center">
-                            <input type="text" placeholder="Digite algo..." class="form-control custom-input mx-2"> 
                             <button class="btn btn-success btn-sm ms-auto buttons" @click="resetForm()" type="button" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
                                 Adicionar novo usuario
-                            </button>
-                            <button type="button" class="btn btn-danger btn-sm ms-1 buttons" @click="deleteUser()">
-                                <i class="bi bi-trash-fill"></i>
                             </button>
                         </div>
                     </h2>

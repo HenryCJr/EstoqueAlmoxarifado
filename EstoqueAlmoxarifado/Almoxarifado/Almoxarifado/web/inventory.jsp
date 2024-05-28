@@ -226,11 +226,14 @@
                         },
                         async searchProducts(src){
                             console.log(src);
-                            const data = await this.request("/Almoxarifado/api/produtos?search=" + src, "GET");
+                            if(src!=""){
+                                 const data = await this.request("/Almoxarifado/api/produtos?search=" + src, "GET");
                                 if (data) {
                                     this.list = data.list;
-                                }
-                                
+                                } 
+                            } else {
+                                this.loadList();
+                            }
                         },
                         
                         async insertOrUpdate() {
